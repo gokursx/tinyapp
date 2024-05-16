@@ -30,12 +30,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: /* What goes here? */ };
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
+  const templateVars = { id, longURL }; // OR longURL: ""
   res.render("urls_show", templateVars);
 });
 
-app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
-});
