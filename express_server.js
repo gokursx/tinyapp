@@ -3,7 +3,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.use(express.urlencoded({ extended: true }));
-
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -11,13 +10,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
-
 app.get("/", (req, res) => {
   res.send("Hello!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -33,6 +27,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// Ensure this route is before the /urls/:id to avoid conflict
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -40,12 +35,27 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
-  const templateVars = { id, longURL }; // OR longURL: ""
+  const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  res.send("Ok");
 });
 
+// Start the server after all routes are defined
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+function generateRandomString() { }
+
+app.get("/u/:id", (req, res) => {
+  // const longURL = ...
+  if (!urlDatabase[req.params.id]) {
+    return res.send("longurl does not exist");
+  }
+  const longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
+});
