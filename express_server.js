@@ -61,6 +61,22 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.post('/urls/:url_id/delete', (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.delete(urls);
+  // Log the POST request body to the database
+  console.log(urlDatabase[req.params.shortURL].userID);
+  if (urlDatabase[req.params.shortURL].userID === req.session["userID"]) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } else {
+    res.status(403).send("Error");
+  }
+});
+
+app.post("/urls/:id", (req, res) => {
+  if (urlDatabase[req.params.id].userID === req.session["userID"]) {
+    let longURL = req.body.longURL;
+    urlDatabase[req.params.id].longURL = longURL;
+    res.redirect('/urls');
+  } else {
+    res.status(403).send("Error");
+  }
 });
