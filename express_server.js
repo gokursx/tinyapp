@@ -1,4 +1,7 @@
+//express_server.js
 const express = require("express");
+//importing bcryptjs
+const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -10,9 +13,21 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
+const bcrypt = require("bcryptjs");
+const password = "purple-monkey-dinosaur"; // found in the req.body object
+const hashedPassword = bcrypt.hashSync(password, 10);
+bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
+bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
+
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 //Creating user object
@@ -20,12 +35,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: bcrypt.hashSync("2", "purple-monkey-dinosaur")
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: bcrypt.hashSync("2", "dishwasher-funk")
   },
 };
 
@@ -144,21 +159,7 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {
-  const userID = req.body.userID;
-  if (userID = userID) {
-    if (bcrypt.compareSync(userID, userID)) {
-      const userID = findUserID(userID, users);
-      res.cookie('user_id', authenticatedUser.id)
-      res.redirect("/urls");
-    } else {
-      res.status(403).send("Password is wrong");
-    }
-  } else {
-    res.status(403).send("Register on the portal");
-  }
-});
-
+//Login route
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -192,7 +193,7 @@ app.post("/register", (req, res) => {
   const userObj = {
     id: newUserID,
     email: email,
-    password: bcrypt.hashSync(password, saltRounds)
+    password: bcrypt.hashSync(password)
   };
   const userEmail = findEmail(email, users);
   if (userObj.email === "" || userObj.password === "") {
