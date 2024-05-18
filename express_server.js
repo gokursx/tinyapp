@@ -91,9 +91,9 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const userEmail = findEmail(email, users);
+  const username = req.body.username;
+  
+  const userName = findEmail(username, users);
   const userPassword = findPassword(email, users);
   if (email === userEmail) {
     if (bcrypt.compareSync(password, userPassword)) {
