@@ -77,7 +77,7 @@ app.get("/register", (req, res) => {
   const templateVars = {
     username: null
   };
-res.render("urls_show", templateVars);
+  res.render("register", templateVars);
 });
 
 //Using post method of express
