@@ -7,7 +7,10 @@ const PORT = 8080; // default port 8080
 
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
-
+app.use((req, res, next) => {
+  req.session.user_id = "some value";
+  next();
+});
 //Using cookie parser
 const cookieParser = require('cookie-parser');
 
@@ -18,7 +21,7 @@ const password = "purple-monkey-dinosaur"; // found in the req.body object
 const hashedPassword = bcrypt.hashSync(password, 10);
 bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
 bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
-req.session.user_id = "some value";
+
 
 const urlDatabase = {
   b6UTxQ: {
@@ -65,6 +68,18 @@ const findEmail = (email, db) => {
   return undefined;
 };
 
+//Function to get user by using email ID
+const getUserByEmail = (email, db) => {
+  // loop in database keys
+  for (let key in db) {
+    // Condition to compare email entered
+    if (db[key].email === email) {
+      return db[key];
+    }
+  }
+  return undefined;
+};
+
 
 //Using get method of express
 app.get("/", (req, res) => {
@@ -82,11 +97,10 @@ app.get("/hello", (req, res) => {
 
 app.get('/urls', (req, res) => {
   const templateVars = { 
-    user: req.cookies.user 
+    user: req.session.user_id 
   };
   res.render('urls_index', templateVars);
 });
-
 // Ensure this route is before the /urls/:id to avoid conflict
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -103,9 +117,8 @@ app.get("/login", (req, res) => {
   const templateVars = {
     userID: null
   };
-res.render("urls_show", templateVars);
+  res.render("login", templateVars);
 });
-
 
 // Start the server after all routes are defined
 app.listen(PORT, () => {
@@ -123,23 +136,19 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-app.get("/urls", (req, res) => {
-  const templateVars = {
-    userID: req.cookies["userID"],
-    // ... any other vars
+app.get('/urls', (req, res) => {
+  const templateVars = { 
+    user: req.session.user_id 
   };
-  res.render("urls_index", templateVars);
+  res.render('urls_index', templateVars);
 });
 
 app.get("/register", (req, res) => {
   const templateVars = {
     user: users[req.session.user_id]
   };
-  res.render("urls_registration", templateVars);
+  res.render("register", templateVars);
 });
-
-
-
 
 //Using post method of express
 app.post('/urls/:url_id/delete', (req, res) => {
