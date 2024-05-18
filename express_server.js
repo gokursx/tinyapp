@@ -13,12 +13,12 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
-const bcrypt = require("bcryptjs");
 const value = 10;
 const password = "purple-monkey-dinosaur"; // found in the req.body object
 const hashedPassword = bcrypt.hashSync(password, 10);
 bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
 bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
+req.session.user_id = "some value";
 
 const urlDatabase = {
   b6UTxQ: {
@@ -53,6 +53,16 @@ const urlsForUser = (id, db) => {
     }
   }
   return userURLs;
+};
+
+//Function to find user email
+const findEmail = (email, db) => {
+  for (let key in db) {
+    if (email === db[key].email) {
+      return email;
+    }
+  }
+  return undefined;
 };
 
 
@@ -123,7 +133,7 @@ app.get("/urls", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.session["userID"]]
+    user: users[req.session.user_id]
   };
   res.render("urls_registration", templateVars);
 });
@@ -135,7 +145,7 @@ app.get("/register", (req, res) => {
 app.post('/urls/:url_id/delete', (req, res) => {
   // Log the POST request body to the database
   console.log(urlDatabase[req.params.shortURL].userID);
-  if (urlDatabase[req.params.shortURL].userID === req.session["userID"]) {
+  if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
@@ -151,7 +161,7 @@ app.post("/urls", (req, res) => {
 
 
 app.post("/urls/:id", (req, res) => {
-  if (urlDatabase[req.params.id].userID === req.session["userID"]) {
+  if (urlDatabase[req.params.id].userID === req.session.user_id) {
     let longURL = req.body.longURL;
     urlDatabase[req.params.id].longURL = longURL;
     res.redirect('/urls');
@@ -171,7 +181,7 @@ app.post("/login", (req, res) => {
       const userID = findUserID(email, users);
       // Cookie for user ID
       res.cookie('user_id', authenticatedUser.id)
-      req.session["userID"] = userID;
+      req.session.user_id = userID;
       res.redirect("/urls");
     } else {
       res.status(403).send("Password is wrong");
@@ -194,7 +204,7 @@ app.post("/register", (req, res) => {
   const userObj = {
     id: newUserID,
     email: email,
-    password: bcrypt.hashSync(password)
+    password: bcrypt.hashSync(password, value)
   };
   const userEmail = findEmail(email, users);
   if (userObj.email === "" || userObj.password === "") {
