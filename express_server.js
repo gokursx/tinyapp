@@ -10,6 +10,20 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+//Creating user object
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 //Using get method of express
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -72,13 +86,8 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//Form for registration
-app.get("/register", (req, res) => {
-  const templateVars = {
-    username: null
-  };
-  res.render("register", templateVars);
-});
+
+
 
 //Using post method of express
 app.post('/urls/:url_id/delete', (req, res) => {
@@ -127,4 +136,26 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session["userID"] = null;
   res.redirect("/urls");
+});
+
+//Creating endpoint for user registration with email, and password
+app.post("/register", (req, res) => {
+  const newUserID = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  const userObj = {
+    id: newUserID,
+    email: email,
+    password: bcrypt.hashSync(password, saltRounds)
+  };
+  const userEmail = findEmail(email, users);
+  if (userObj.email === "" || userObj.password === "") {
+    res.status(400).send("400 error ! Please Provide Information");
+  } else if (!userEmail) {
+    users[newUserID] = userObj;
+    req.session["userID"] = newUserID;
+    res.redirect("/urls");
+  } else {
+    res.status(400).send("400 error ! Please Login");
+  }
 });
