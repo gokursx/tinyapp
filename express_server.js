@@ -24,6 +24,17 @@ const users = {
   },
 };
 
+const urlsForUser = (id, db) => {
+  const userURLs = {};
+  for (let url in db) {
+    if (id === db[url].userID) {
+      userURLs[url] = db[url];
+    }
+  }
+  return userURLs;
+};
+
+
 //Using get method of express
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -38,7 +49,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    userID : req.session["userID"],
+    urls: urlsForUser(req.session.userID, urlDatabase),
+    user: users[req.session["userID"]]
+  };
   res.render("urls_index", templateVars);
 });
 
@@ -56,7 +71,7 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    username: null
+    userID: null
   };
 res.render("urls_show", templateVars);
 });
@@ -80,10 +95,17 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
+    userID: req.cookies["userID"],
     // ... any other vars
   };
   res.render("urls_index", templateVars);
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    user: users[req.session["userID"]]
+  };
+  res.render("urls_registration", templateVars);
 });
 
 
@@ -118,10 +140,10 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const userName = req.body.username;
-  if (username = userName) {
-    if (bcrypt.compareSync(username, userName)) {
-      const userID = findUserID(username, users);
+  const userID = req.body.userID;
+  if (userID = userID) {
+    if (bcrypt.compareSync(userID, userID)) {
+      const userID = findUserID(userID, users);
       res.cookie('name', 'tobi', { domain: '.example.com', path: '/admin', secure: true })
       req.session["userID"] = userID;
       res.redirect("/urls");
