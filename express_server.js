@@ -27,6 +27,8 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
+
 // Ensure this route is before the /urls/:id to avoid conflict
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -37,6 +39,13 @@ app.get("/urls/:id", (req, res) => {
   const longURL = urlDatabase[id];
   const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.session["userID"]]
+  };
+  res.render("urls_login", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -78,5 +87,24 @@ app.post("/urls/:id", (req, res) => {
     res.redirect('/urls');
   } else {
     res.status(403).send("Error");
+  }
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userEmail = findEmail(email, users);
+  const userPassword = findPassword(email, users);
+  if (email === userEmail) {
+    if (bcrypt.compareSync(password, userPassword)) {
+      const userID = findUserID(email, users);
+      res.cookie('name', 'tobi', { domain: '.example.com', path: '/admin', secure: true })
+      req.session["userID"] = userID;
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("Password is wrong");
+    }
+  } else {
+    res.status(403).send("Register on the portal");
   }
 });
