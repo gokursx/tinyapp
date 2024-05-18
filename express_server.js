@@ -5,6 +5,11 @@ const PORT = 8080; // default port 8080
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
+//Using cookie parser
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
+
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
@@ -48,13 +53,12 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/urls", (req, res) => {
-  const templateVars = {
-    userID : req.session["userID"],
-    urls: urlsForUser(req.session.userID, urlDatabase),
-    user: users[req.session["userID"]]
+
+app.get('/urls', (req, res) => {
+  const templateVars = { 
+    user: req.cookies.user 
   };
-  res.render("urls_index", templateVars);
+  res.render('urls_index', templateVars);
 });
 
 // Ensure this route is before the /urls/:id to avoid conflict
@@ -129,6 +133,7 @@ app.post("/urls", (req, res) => {
 });
 
 
+
 app.post("/urls/:id", (req, res) => {
   if (urlDatabase[req.params.id].userID === req.session["userID"]) {
     let longURL = req.body.longURL;
@@ -144,8 +149,7 @@ app.post("/login", (req, res) => {
   if (userID = userID) {
     if (bcrypt.compareSync(userID, userID)) {
       const userID = findUserID(userID, users);
-      res.cookie('name', 'tobi', { domain: '.example.com', path: '/admin', secure: true })
-      req.session["userID"] = userID;
+      res.cookie('user_id', authenticatedUser.id)
       res.redirect("/urls");
     } else {
       res.status(403).send("Password is wrong");
@@ -192,13 +196,13 @@ app.post("/register", (req, res) => {
   };
   const userEmail = findEmail(email, users);
   if (userObj.email === "" || userObj.password === "") {
-    res.status(400).send("400 error ! Please Provide Information");
+    res.status(400).send("This is a 400 error: Provide Information");
   } else if (!userEmail) {
     users[newUserID] = userObj;
     // Cookie for user ID
     res.cookie('user_id', newUserID)
     res.redirect("/urls");
   } else {
-    res.status(400).send("400 error ! Please Login");
+    res.status(400).send("This is a 400 error : Login to continue");
   }
 });
