@@ -2,7 +2,7 @@
 const express = require("express");
 //importing bcryptjs
 const bcrypt = require('bcryptjs');
-const { generateRandomString, findEmail, findPassword, findUserID, urlsForUser } = require("./helpers");
+const { generateRandomString, findEmail, findPassword, findUserID } = require("./views/helpers.js");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -49,25 +49,6 @@ const users = {
   },
 };
 
-const urlsForUser = (id, database) => {
-  const userURLs = {};
-  for (let url in database) {
-    if (id === database[url].userID) {
-      userURLs[url] = database[url];
-    }
-  }
-  return userURLs;
-};
-
-//Function to find user email
-const findEmail = (email, database) => {
-  for (let key in database) {
-    if (email === database[key].email) {
-      return email;
-    }
-  }
-  return undefined;
-};
 
 //Using get method of express
 app.get("/", (req, res) => {
@@ -113,16 +94,7 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-function generateRandomString() { }
 
-app.get("/u/:id", (req, res) => {
-  // const longURL = ...
-  if (!urlDatabase[req.params.id]) {
-    return res.send("longurl does not exist");
-  }
-  const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
-});
 
 app.get('/urls', (req, res) => {
   const templateVars = {
