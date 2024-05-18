@@ -48,20 +48,20 @@ const users = {
   },
 };
 
-const urlsForUser = (id, db) => {
+const urlsForUser = (id, database) => {
   const userURLs = {};
-  for (let url in db) {
-    if (id === db[url].userID) {
-      userURLs[url] = db[url];
+  for (let url in database) {
+    if (id === database[url].userID) {
+      userURLs[url] = database[url];
     }
   }
   return userURLs;
 };
 
 //Function to find user email
-const findEmail = (email, db) => {
-  for (let key in db) {
-    if (email === db[key].email) {
+const findEmail = (email, database) => {
+  for (let key in database) {
+    if (email === database[key].email) {
       return email;
     }
   }
@@ -69,12 +69,12 @@ const findEmail = (email, db) => {
 };
 
 //Function to get user by using email ID
-const getUserByEmail = (email, db) => {
-  // loop in database keys
-  for (let key in db) {
+const getUserByEmail = (email, database) => {
+  // Iterate through keys in database
+  for (let key in database) {
     // Condition to compare email entered
-    if (db[key].email === email) {
-      return db[key];
+    if (database[key].email === email) {
+      return database[key];
     }
   }
   return undefined;
