@@ -115,3 +115,8 @@ app.post("/login", (req, res) => {
     res.status(403).send("Register on the portal");
   }
 });
+
+app.post("/logout", (req, res) => {
+  req.session["userID"] = null;
+  res.redirect("/urls");
+});
