@@ -2,6 +2,7 @@
 const express = require("express");
 //importing bcryptjs
 const bcrypt = require('bcryptjs');
+const { generateRandomString, findEmail, findPassword, findUserID, urlsForUser } = require("./helpers");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -68,19 +69,6 @@ const findEmail = (email, database) => {
   return undefined;
 };
 
-//Function to get user by using email ID
-const getUserByEmail = (email, database) => {
-  // Iterate through keys in database
-  for (let key in database) {
-    // Condition to compare email entered
-    if (database[key].email === email) {
-      return database[key];
-    }
-  }
-  return undefined;
-};
-
-
 //Using get method of express
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -96,8 +84,8 @@ app.get("/hello", (req, res) => {
 
 
 app.get('/urls', (req, res) => {
-  const templateVars = { 
-    user: req.session.user_id 
+  const templateVars = {
+    user: req.session.user_id
   };
   res.render('urls_index', templateVars);
 });
@@ -137,8 +125,8 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  const templateVars = { 
-    user: req.session.user_id 
+  const templateVars = {
+    user: req.session.user_id
   };
   res.render('urls_index', templateVars);
 });
