@@ -14,6 +14,7 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 const bcrypt = require("bcryptjs");
+const value = 10;
 const password = "purple-monkey-dinosaur"; // found in the req.body object
 const hashedPassword = bcrypt.hashSync(password, 10);
 bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
@@ -35,12 +36,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: bcrypt.hashSync("2", "purple-monkey-dinosaur")
+    password: bcrypt.hashSync("2", value)
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: bcrypt.hashSync("2", "dishwasher-funk")
+    password: bcrypt.hashSync("2", value)
   },
 };
 
