@@ -155,8 +155,28 @@ app.post("/login", (req, res) => {
   }
 });
 
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userEmail = findEmail(email, users);
+  const userPassword = findPassword(email, users);
+  if (email === userEmail) {
+    if (bcrypt.compareSync(password, userPassword)) {
+      const userID = findUserID(email, users);
+      // Cookie for user ID
+      res.cookie('user_id', authenticatedUser.id)
+      req.session["userID"] = userID;
+      res.redirect("/urls");
+    } else {
+      res.status(403).send("Password is wrong");
+    }
+  } else {
+    res.status(403).send("Register on the portal");
+  }
+});
+
 app.post("/logout", (req, res) => {
-  req.session["userID"] = null;
+  res.clearCookie('user_id')
   res.redirect("/urls");
 });
 
@@ -175,7 +195,8 @@ app.post("/register", (req, res) => {
     res.status(400).send("400 error ! Please Provide Information");
   } else if (!userEmail) {
     users[newUserID] = userObj;
-    req.session["userID"] = newUserID;
+    // Cookie for user ID
+    res.cookie('user_id', newUserID)
     res.redirect("/urls");
   } else {
     res.status(400).send("400 error ! Please Login");
