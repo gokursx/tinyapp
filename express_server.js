@@ -1,5 +1,7 @@
 //express_server.js
 const express = require("express");
+//Importing express-session
+const session = require('express-session');
 //importing bcryptjs
 const bcrypt = require('bcryptjs');
 const { generateRandomString, findEmail, findPassword, findUserID } = require("./views/helpers.js");
@@ -8,6 +10,12 @@ const PORT = 8080; // default port 8080
 
 app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+
+app.use(session({
+  secret: 'mySecretKey_2024!#$', // This secret will be used to sign the session ID cookie.
+  resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
+  saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
+}));
 app.use((req, res, next) => {
   req.session.user_id = "some value";
   next();
