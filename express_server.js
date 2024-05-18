@@ -72,6 +72,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//Form for user registration
+app.get("/register", (req, res) => {
+  const templateVars = {
+    user: users[req.session["userID"]]
+  };
+  res.render("urls_registration", templateVars);
+});
+
 //Using post method of express
 app.post('/urls/:url_id/delete', (req, res) => {
   // Log the POST request body to the database
