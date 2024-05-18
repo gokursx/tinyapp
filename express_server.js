@@ -42,9 +42,9 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.session["userID"]]
+    username: null
   };
-  res.render("urls_login", templateVars);
+res.render("urls_show", templateVars);
 });
 
 
@@ -72,12 +72,12 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//Form for user registration
+//Form for registration
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.session["userID"]]
+    username: null
   };
-  res.render("urls_registration", templateVars);
+res.render("urls_show", templateVars);
 });
 
 //Using post method of express
