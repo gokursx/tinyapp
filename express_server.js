@@ -10,6 +10,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+//Using get method of express
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -26,8 +27,6 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
-
-
 
 // Ensure this route is before the /urls/:id to avoid conflict
 app.get("/urls/new", (req, res) => {
@@ -48,10 +47,6 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok");
-});
 
 // Start the server after all routes are defined
 app.listen(PORT, () => {
@@ -69,6 +64,15 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"],
+    // ... any other vars
+  };
+  res.render("urls_index", templateVars);
+});
+
+//Using post method of express
 app.post('/urls/:url_id/delete', (req, res) => {
   // Log the POST request body to the database
   console.log(urlDatabase[req.params.shortURL].userID);
@@ -79,6 +83,12 @@ app.post('/urls/:url_id/delete', (req, res) => {
     res.status(403).send("Error");
   }
 });
+
+app.post("/urls", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  res.send("Ok");
+});
+
 
 app.post("/urls/:id", (req, res) => {
   if (urlDatabase[req.params.id].userID === req.session["userID"]) {
@@ -91,13 +101,10 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const username = req.body.username;
-  
-  const userName = findEmail(username, users);
-  const userPassword = findPassword(email, users);
-  if (email === userEmail) {
-    if (bcrypt.compareSync(password, userPassword)) {
-      const userID = findUserID(email, users);
+  const userName = req.body.username;
+  if (username = userName) {
+    if (bcrypt.compareSync(username, userName)) {
+      const userID = findUserID(username, users);
       res.cookie('name', 'tobi', { domain: '.example.com', path: '/admin', secure: true })
       req.session["userID"] = userID;
       res.redirect("/urls");
