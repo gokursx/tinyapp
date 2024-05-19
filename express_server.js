@@ -9,6 +9,9 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended:false}));
+// add this line
+app.use(express.json());
 app.set("view engine", "ejs");
 
 app.use(session({
@@ -72,15 +75,16 @@ app.get("/hello", (req, res) => {
 });
 
 
+
 app.get('/urls', (req, res) => {
-  const templateVars = {
-    user: req.session.user_id
+  // Assuming you have a data structure for URLs that you want to pass to your template
+  const urlsForUser = { 
+    "b2xVn2": "http://www.lighthouselabs.ca", 
+    "9sm5xK": "http://www.google.com" 
   };
-  res.render('urls_index', templateVars);
-});
-// Ensure this route is before the /urls/:id to avoid conflict
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  
+  // Pass this structure to your template like so:
+  res.render('urls_index', { urls: urlsForUser });
 });
 
 app.get("/urls/:id", (req, res) => {
