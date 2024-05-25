@@ -9,7 +9,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.urlencoded({extended:false}));
 // add this line
 app.use(express.json());
 app.set("view engine", "ejs");
@@ -19,10 +18,11 @@ app.use(session({
   resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
 }));
-app.use((req, res, next) => {
-  req.session.user_id = "some value";
-  next();
-});
+// app.use((req, res, next) => {
+//   req.session.user_id = "some value";
+//   next();
+// });
+
 //Using cookie parser
 const cookieParser = require('cookie-parser');
 
@@ -36,11 +36,11 @@ bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
 
 
 const urlDatabase = {
-  b6UTxQ: {
+  "9sm5xK": {
     longURL: "https://www.tsn.ca",
     userID: "aJ48lW",
   },
-  i3BoGr: {
+  "b2xVn2": {
     longURL: "https://www.google.ca",
     userID: "aJ48lW",
   },
@@ -82,10 +82,28 @@ app.get('/urls', (req, res) => {
     "b2xVn2": "http://www.lighthouselabs.ca", 
     "9sm5xK": "http://www.google.com" 
   };
-  
+  const getUrl = function(url) {
+    for (let keys in urlDatabase)
+      if(user = userID) {
+    if (url == longURL ) {
+      return url;
+    }
+  }
+    getUrl();
+
+  }
+  console.log(req.session.user_id);
+  console.log(users);
   // Pass this structure to your template like so:
-  res.render('urls_index', { urls: urlsForUser });
+  res.render('urls_index', { urls: urlsForUser, user: users[req.session.user_id]})
 });
+
+app.get("/urls/new",(req, res) => {
+  const templateVars = {
+    user: req.session.user_id
+  };
+  res.render('urls_new', templateVars);
+})
 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
@@ -94,11 +112,15 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+
+//url_Login
+//
+
 app.get("/login", (req, res) => {
   const templateVars = {
-    userID: null
+    user: null
   };
-  res.render("login", templateVars);
+  res.render("urls_login", templateVars);
 });
 
 // Start the server after all routes are defined
@@ -106,14 +128,13 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-
-
-app.get('/urls', (req, res) => {
-  const templateVars = {
-    user: req.session.user_id
-  };
-  res.render('urls_index', templateVars);
-});
+// app.get('/urls', (req, res) => {
+//   console.log(req.session.user_id);
+//   const templateVars = {
+//     user: users[req.session.user_id]
+//   };
+//   res.render('urls_index', templateVars);
+// });
 
 app.get("/register", (req, res) => {
   const templateVars = {
@@ -123,14 +144,22 @@ app.get("/register", (req, res) => {
 });
 
 //Using post method of express
-app.post('/urls/:url_id/delete', (req, res) => {
-  // Log the POST request body to the database
-  console.log(urlDatabase[req.params.shortURL].userID);
-  if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
-    delete urlDatabase[req.params.shortURL];
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const shortURL = req.params.shortURL;
+  console.log("This is short url", shortURL);
+  console.log("this is userid", req.session.user_id);
+
+  // Check if the shortURL exists in the database
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("Short URL not found.");
+  }
+
+  // Check if the user has permission to delete the shortURL
+  if (urlDatabase[shortURL].userID === req.session.user_id) {
+    delete urlDatabase[shortURL];
     res.redirect("/urls");
   } else {
-    res.status(403).send("Error");
+    res.status(403).send("Permission denied.");
   }
 });
 
@@ -161,7 +190,6 @@ app.post("/login", (req, res) => {
     if (bcrypt.compareSync(password, userPassword)) {
       const userID = findUserID(email, users);
       // Cookie for user ID
-      res.cookie('user_id', authenticatedUser.id)
       req.session.user_id = userID;
       res.redirect("/urls");
     } else {
@@ -173,7 +201,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id')
+  req.session.user_id = null;
   res.redirect("/urls");
 });
 
@@ -193,9 +221,10 @@ app.post("/register", (req, res) => {
   } else if (!userEmail) {
     users[newUserID] = userObj;
     // Cookie for user ID
-    res.cookie('user_id', newUserID)
+    req.session.user_id = newUserID;
     res.redirect("/urls");
   } else {
     res.status(400).send("This is a 400 error : Login to continue");
   }
 });
+
