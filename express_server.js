@@ -63,7 +63,7 @@ const users = {
 
 //Using get method of express
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.send("Welcome to TinyApp. Shorten your longURLs!");
 });
 
 app.get("/urls.json", (req, res) => {
