@@ -81,22 +81,22 @@ app.get('/urls', (req, res) => {
 
   const userID = req.session.user_id;//req.session.user_id;
   const urlsForUser = {};
-  const getUrl = function(urlDatabase) {
+  const getUrl = function (urlDatabase) {
     for (let keys in urlDatabase) {
-    const id = urlDatabase[keys].userID;  
-    if(id === userID) {
-    urlsForUser[keys] = urlDatabase[keys].longURL;
+      const id = urlDatabase[keys].userID;
+      if (id === userID) {
+        urlsForUser[keys] = urlDatabase[keys].longURL;
+      }
     }
   }
-  }
   getUrl(urlDatabase);
-  if(!req.session.user_id) {
+  if (!req.session.user_id) {
     return res.status(400).send("Login in before go to the page");
   }
- 
+
 
   // Pass this structure to your template like so:
-  res.render('urls_index', { urls: urlsForUser, user: users[req.session.user_id]})
+  res.render('urls_index', { urls: urlsForUser, user: users[req.session.user_id] })
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -112,19 +112,19 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
-app.get("/urls/new",(req, res) => {
+app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: req.session.user_id
   };
   res.render('urls_new', templateVars);
-  if(!req.session.user_id) {
+  if (!req.session.user_id) {
     res.redirect("/login");
   }
 })
 
 
 app.get("/urls/:shortURL", (req, res) => {
-  console.log("userid",req.session.user_id);
+  console.log("userid", req.session.user_id);
   if (!req.session.user_id) {
     res.status(400).send("400 error ! Please Login or Register");
   } else if (!urlDatabase[req.params.shortURL]) {
@@ -269,7 +269,10 @@ app.post("/register", (req, res) => {
     password: bcrypt.hashSync(password, value)
   };
   const userEmail = findEmail(email, users);
-  console.log(userEmail,users);
+  if (email == userEmail) {
+    res.status(400).send("This email already exists");
+  }
+  console.log(userEmail, users);
   if (userObj.email === "" || userObj.password === "") {
     res.status(400).send("This is a 400 error: Provide Information");
   } else if (!userEmail) {
@@ -280,5 +283,8 @@ app.post("/register", (req, res) => {
   } else {
     res.status(400).send("This is a 400 error : Login to continue");
   }
+
+
+
 });
 
