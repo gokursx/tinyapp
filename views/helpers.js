@@ -11,6 +11,7 @@ const getUserByEmail = (email, database) => {
   }
   return undefined;
 };
+
 const urlsForUser = (id, database) => {
   const userURLs = {};
   for (let url in database) {
@@ -20,6 +21,7 @@ const urlsForUser = (id, database) => {
   }
   return userURLs;
 };
+
 
 //Function to find user email
 const findEmail = (email, database) => {
@@ -63,4 +65,4 @@ const findUserID = (email, database) => {
 
 
 //Exporting functions
-module.exports = { generateRandomString,findEmail, findPassword, findUserID, urlsForUser, getUserByEmail };
+module.exports = { generateRandomString,findEmail, findPassword, findUserID, urlsForUser , getUserByEmail };

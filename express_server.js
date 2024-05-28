@@ -5,7 +5,7 @@ const session = require('express-session');
 //importing bcryptjs
 const bcrypt = require('bcryptjs');
 //Importing Helper functions from helpers.js module
-const { generateRandomString, findEmail, findPassword, findUserID,urlsForUser, getUserByEmail } = require("./views/helpers.js");
+const { generateRandomString, findEmail, findPassword, findUserID, urlsForUser} = require("./views/helpers.js");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -64,7 +64,7 @@ const users = {
 
 //Using get method of express
 app.get("/", (req, res) => {
-  res.send("Welcome to TinyApp. Shorten your longURLs!");
+  res.redirect("/login");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -81,23 +81,26 @@ app.get('/urls', (req, res) => {
   // Assuming you have a data structure for URLs that you want to pass to your template
 
   const userID = req.session.user_id;//req.session.user_id;
-  const urlsForUser = {};
-  const getUrl = function (urlDatabase) {
-    for (let keys in urlDatabase) {
-      const id = urlDatabase[keys].userID;
-      if (id === userID) {
-        urlsForUser[keys] = urlDatabase[keys].longURL;
-      }
-    }
-  }
-  getUrl(urlDatabase);
+  //Uses helper function
+  // const getUrl = function (urlDatabase) {
+  //   const urlsForUser = {};
+  //   for (let keys in urlDatabase) {
+  //     const id = urlDatabase[keys].userID;
+  //     if (id === userID) {
+  //       urlsForUser[keys] = urlDatabase[keys].longURL;
+  //     }
+  //   }
+  // }  
+  // getUrl(urlDatabase);
   if (!req.session.user_id) {
     return res.status(400).send("Login in before go to the page");
   }
+  console.log(urlsForUser);
+  const urls = urlsForUser(userID,urlDatabase);
 
 
   // Pass this structure to your template like so:
-  res.render('urls_index', { urls: urlsForUser, user: users[req.session.user_id] })
+  res.render('urls_index', { urls, user: users[req.session.user_id] })
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -166,10 +169,7 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
-// Start the server after all routes are defined
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+
 
 // app.get('/urls', (req, res) => {
 //   console.log(req.session.user_id);
@@ -284,8 +284,10 @@ app.post("/register", (req, res) => {
   } else {
     res.status(400).send("This is a 400 error : Login to continue");
   }
+});
 
-
-
+// Start the server after all routes are defined
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });
 
