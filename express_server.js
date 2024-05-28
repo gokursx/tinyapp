@@ -4,7 +4,8 @@ const express = require("express");
 const session = require('express-session');
 //importing bcryptjs
 const bcrypt = require('bcryptjs');
-const { generateRandomString, findEmail, findPassword, findUserID } = require("./views/helpers.js");
+//Importing Helper functions from helpers.js module
+const { generateRandomString, findEmail, findPassword, findUserID,urlsForUser, getUserByEmail } = require("./views/helpers.js");
 const app = express();
 const PORT = 8080; // default port 8080
 
