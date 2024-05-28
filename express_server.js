@@ -78,24 +78,38 @@ app.get("/hello", (req, res) => {
 
 app.get('/urls', (req, res) => {
   // Assuming you have a data structure for URLs that you want to pass to your template
-  const urlsForUser = { 
-    "b2xVn2": "http://www.lighthouselabs.ca", 
-    "9sm5xK": "http://www.google.com" 
-  };
-  const getUrl = function(url) {
-    for (let keys in urlDatabase)
-      if(user = userID) {
-    if (url == longURL ) {
-      return url;
+
+  const userID = req.session.user_id;//req.session.user_id;
+  const urlsForUser = {};
+  const getUrl = function(urlDatabase) {
+    for (let keys in urlDatabase) {
+    const id = urlDatabase[keys].userID;  
+    if(id === userID) {
+    urlsForUser[keys] = urlDatabase[keys].longURL;
     }
   }
-    getUrl();
-
   }
-  console.log(req.session.user_id);
-  console.log(users);
+  getUrl(urlDatabase);
+  if(!req.session.user_id) {
+    return res.status(400).send("Login in before go to the page");
+  }
+ 
+
   // Pass this structure to your template like so:
   res.render('urls_index', { urls: urlsForUser, user: users[req.session.user_id]})
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const urlObject = urlDatabase[shortURL];
+  if (urlObject) {
+    const longURL = urlObject.longURL;
+    res.redirect(longURL);
+  } else {
+    // If the shortURL does not exist in the database, you can redirect to an error page or homepage
+    // Or send an error message to the user
+    res.status(404).send("The requested URL does not exist.");
+  }
 });
 
 app.get("/urls/new",(req, res) => {
@@ -103,14 +117,42 @@ app.get("/urls/new",(req, res) => {
     user: req.session.user_id
   };
   res.render('urls_new', templateVars);
+  if(!req.session.user_id) {
+    res.redirect("/login");
+  }
 })
+
+
+app.get("/urls/:shortURL", (req, res) => {
+  console.log("userid",req.session.user_id);
+  if (!req.session.user_id) {
+    res.status(400).send("400 error ! Please Login or Register");
+  } else if (!urlDatabase[req.params.shortURL]) {
+    res.status(404).send("404 not found! This URL doesn't exist");
+  } else if (urlDatabase[req.params.shortURL].userID === req.session.user_id) {
+    const templateVars = {
+      id: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: users[req.session.user_id]
+    };
+    res.render("urls_show", templateVars);
+  } else if (urlDatabase[req.params.shortURL].userID !== req.session.user_id) {
+    res.status(403).send("403 error ! This is not your URL");
+  } else {
+    res.status(400).send("400 error ! Please Login");
+  }
+});
+
 
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[id];
+  const longURL = urlDatabase[id].longURL; // Corrected to reference the URL string
   const templateVars = { id, longURL };
   res.render("urls_show", templateVars);
 });
+
+
+
 
 
 //url_Login
@@ -163,14 +205,25 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   }
 });
 
+// app.post("/urls", (req, res) => {
+//   console.log(req.body); // Log the POST request body to the console
+//   res.send("Ok");
+// });
+
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok");
+  const longURL = req.body.longURL;
+  const userID = req.session.user_id;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = { longURL, userID };
+  res.redirect(`/urls/${shortURL}`);
 });
 
 
 
+
 app.post("/urls/:id", (req, res) => {
+  console.log(urlDatabase);
+  console.log(req.session.user_id)
   if (urlDatabase[req.params.id].userID === req.session.user_id) {
     let longURL = req.body.longURL;
     urlDatabase[req.params.id].longURL = longURL;
@@ -202,7 +255,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   req.session.user_id = null;
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //Creating endpoint for user registration with email, and password
@@ -216,6 +269,7 @@ app.post("/register", (req, res) => {
     password: bcrypt.hashSync(password, value)
   };
   const userEmail = findEmail(email, users);
+  console.log(userEmail,users);
   if (userObj.email === "" || userObj.password === "") {
     res.status(400).send("This is a 400 error: Provide Information");
   } else if (!userEmail) {
