@@ -32,5 +32,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - After registration the page checks the credentials upon logging in. If user name matches password, user logs in otherwise shows "password is wrong" for incorrect password (login page) or "Username already exists" (Register page).
 
 ## Final Product
-!["Screenshot of URLs page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/urls-page.png)
-!["Screenshot of register page"](https://github.com/lighthouse-labs/tinyapp/blob/master/docs/register-page.png)
+!["Screenshot of URLs page"](https://github.com/gokursx/tinyapp/blob/main/docs/createnewurl-page.png%20.png)
+!["Screenshot of createnewurl page"](https://github.com/gokursx/tinyapp/blob/main/docs/createnewurl-page.png%20.png)
+!["Screenshot of login page"] (https://github.com/gokursx/tinyapp/blob/main/docs/login-page.png)
