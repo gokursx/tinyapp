@@ -21,10 +21,7 @@ app.use(session({
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
 }));
 
-//Using cookie parser
-const cookieParser = require('cookie-parser');
 
-app.use(cookieParser());
 
 const salt = 10;
 
