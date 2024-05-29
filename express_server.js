@@ -185,7 +185,7 @@ app.post("/login", (req, res) => {
       res.status(403).send("Password is wrong");
     }
   } else {
-    res.status(403).send("Register on the portal");
+    res.status(403).send("User email is invalid. Register");
   }
 });
 
