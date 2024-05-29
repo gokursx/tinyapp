@@ -26,11 +26,8 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
-const value = 10;
-const password = "purple-monkey-dinosaur"; // found in the req.body object
-const hashedPassword = bcrypt.hashSync(password, 10);
-bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
-bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
+const salt = 10;
+
 
 const urlDatabase = {
   "9sm5xK": {
@@ -48,12 +45,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: bcrypt.hashSync("2", value)
+    password: bcrypt.hashSync("2", salt)
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: bcrypt.hashSync("2", value)
+    password: bcrypt.hashSync("2", salt)
   },
 };
 
@@ -233,7 +230,7 @@ app.post("/register", (req, res) => {
   const userObj = {
     id: newUserID,
     email: email,
-    password: bcrypt.hashSync(password, value)
+    password: bcrypt.hashSync(password, salt)
   };
   const userEmail = findEmail(email, users);
   if (email == userEmail) {
