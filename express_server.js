@@ -59,13 +59,6 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
 
 app.get('/urls', (req, res) => {
   // Assuming you have a data structure for URLs that you want to pass to your template
