@@ -34,4 +34,4 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 !["Screenshot of URLs page"](https://github.com/gokursx/tinyapp/blob/main/docs/createnewurl-page.png%20.png)
 !["Screenshot of createnewurl page"](https://github.com/gokursx/tinyapp/blob/main/docs/createnewurl-page.png%20.png)
-!["Screenshot of login page"] (https://github.com/gokursx/tinyapp/blob/main/docs/login-page.png)
+!["Screenshot of login page"](https://github.com/gokursx/tinyapp/blob/main/docs/login-page.png)
