@@ -19,10 +19,7 @@ app.use(session({
   resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
 }));
-// app.use((req, res, next) => {
-//   req.session.user_id = "some value";
-//   next();
-// });
+
 
 //Using cookie parser
 const cookieParser = require('cookie-parser');
@@ -34,7 +31,6 @@ const password = "purple-monkey-dinosaur"; // found in the req.body object
 const hashedPassword = bcrypt.hashSync(password, 10);
 bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword); // returns true
 bcrypt.compareSync("pink-donkey-minotaur", hashedPassword); // returns false
-
 
 const urlDatabase = {
   "9sm5xK": {
@@ -61,7 +57,6 @@ const users = {
   },
 };
 
-
 //Using get method of express
 app.get("/", (req, res) => {
   res.redirect("/login");
@@ -74,8 +69,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-
-
 
 app.get('/urls', (req, res) => {
   // Assuming you have a data structure for URLs that you want to pass to your template
@@ -97,7 +90,6 @@ app.get('/urls', (req, res) => {
   }
   console.log(urlsForUser);
   const urls = urlsForUser(userID,urlDatabase);
-
 
   // Pass this structure to your template like so:
   res.render('urls_index', { urls, user: users[req.session.user_id] })
@@ -126,7 +118,6 @@ app.get("/urls/new", (req, res) => {
   }
 })
 
-
 app.get("/urls/:shortURL", (req, res) => {
   console.log("userid", req.session.user_id);
   if (!req.session.user_id) {
@@ -147,7 +138,6 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
-
 app.get("/urls/:id", (req, res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id].longURL; // Corrected to reference the URL string
@@ -155,29 +145,13 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-
-
-
-
 //url_Login
-//
-
 app.get("/login", (req, res) => {
   const templateVars = {
     user: null
   };
   res.render("urls_login", templateVars);
 });
-
-
-
-// app.get('/urls', (req, res) => {
-//   console.log(req.session.user_id);
-//   const templateVars = {
-//     user: users[req.session.user_id]
-//   };
-//   res.render('urls_index', templateVars);
-// });
 
 app.get("/register", (req, res) => {
   const templateVars = {
@@ -206,11 +180,6 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   }
 });
 
-// app.post("/urls", (req, res) => {
-//   console.log(req.body); // Log the POST request body to the console
-//   res.send("Ok");
-// });
-
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const userID = req.session.user_id;
@@ -218,9 +187,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = { longURL, userID };
   res.redirect(`/urls/${shortURL}`);
 });
-
-
-
 
 app.post("/urls/:id", (req, res) => {
   console.log(urlDatabase);

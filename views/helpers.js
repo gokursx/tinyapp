@@ -1,5 +1,4 @@
 
-
 //Function to get user by using email ID
 const getUserByEmail = (email, database) => {
   // Iterate through keys in database
@@ -21,7 +20,6 @@ const urlsForUser = (id, database) => {
   }
   return userURLs;
 };
-
 
 //Function to find user email
 const findEmail = (email, database) => {
@@ -59,9 +57,6 @@ const findUserID = (email, database) => {
   }
   return undefined;
 };
-
-
-
 
 
 //Exporting functions
