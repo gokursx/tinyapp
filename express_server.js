@@ -20,14 +20,12 @@ app.use(session({
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
 }));
 
-
 //Using cookie parser
 const cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
 
 const salt = 10;
-
 
 const urlDatabase = {
   "9sm5xK": {
@@ -99,14 +97,19 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: req.session.user_id
-  };
-  res.render('urls_new', templateVars);
-  if (!req.session.user_id) {
-    res.redirect("/login");
+  const userID = req.session.user_id;
+  
+  if (!userID) {
+    return res.redirect("/login");
   }
-})
+  
+  const user = users[userID];
+  const templateVars = {
+    user: user  // Now, 'user' contains all the information of the logged-in user
+  };
+  
+  res.render('urls_new', templateVars);
+});
 
 app.get("/urls/:shortURL", (req, res) => {
   console.log("userid", req.session.user_id);
