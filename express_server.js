@@ -6,6 +6,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 //Importing Helper functions from helpers.js module
 const { generateRandomString, findEmail, findPassword, findUserID, urlsForUser} = require("./views/helpers.js");
+const {urlDatabase, users} = require("./views/data.js");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -26,31 +27,6 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 const salt = 10;
-
-const urlDatabase = {
-  "9sm5xK": {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  "b2xVn2": {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
-
-//Creating user object
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: bcrypt.hashSync("2", salt)
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: bcrypt.hashSync("2", salt)
-  },
-};
 
 //Using get method of express
 app.get("/", (req, res) => {
